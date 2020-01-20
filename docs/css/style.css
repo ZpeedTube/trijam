@@ -1,0 +1,21 @@
+body {
+    background-color: #0e273f;
+    font-family: sans-serif, Arial, Helvetica;
+    color:white;
+    text-align: center;
+    margin: 20px;
+}
+
+a {
+    color:white;
+}
+a:hover {
+    color: lightblue;
+}
+a:active {
+    color: blueviolet;
+}
+
+p {
+    text-align: center;
+}

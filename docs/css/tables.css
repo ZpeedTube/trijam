@@ -1,0 +1,66 @@
+body {
+    background-color: #0e273f;
+    font-family: sans-serif, Arial, Helvetica;
+}
+
+h1 {
+    color: white;
+}
+
+
+table {
+    margin: auto;
+    border-radius: 7px;
+    border-collapse: collapse;
+    max-width: 100%;
+}
+tr {
+    background-color: rgb(70, 165, 200);
+}
+#trHead {
+    background-color: rgb(70, 165, 70);
+    border-bottom-color: rgb(31, 59, 23);
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
+}
+th {
+    background-color: inherit;
+    height: 45px;
+    padding: 5px;
+    font-size: 26px;
+    font-weight: 700;
+    text-align: left;
+    color: #101f1f;
+    border-top-color: inherit;
+}
+td {
+    height: 25px;
+    padding: 10px;
+    font-size: 18px;
+    color: black;
+}
+#firstTh {
+    text-align: center;
+    border-radius: 8px 0px 0px 0px;
+}
+#lastTh {
+    border-radius: 0px 8px 0px 0px;
+}
+
+#jam {
+    min-width: 100px;
+    text-align: center;
+    padding-right: 20px;
+}
+
+#name {
+    min-width: 200px;
+}
+
+#game {
+    min-width: 200px;
+}
+
+#theme {
+    min-width: 200px;
+}
