@@ -1,11 +1,4 @@
-body {
-    background-color: #0e273f;
-    font-family: sans-serif, Arial, Helvetica;
-}
 
-h1 {
-    color: white;
-}
 
 
 table {
@@ -16,6 +9,9 @@ table {
 }
 tr {
     background-color: rgb(70, 165, 200);
+}
+tr:nth-child(odd){
+    background-color: rgb(76, 171, 206);
 }
 #trHead {
     background-color: rgb(70, 165, 70);
@@ -38,6 +34,7 @@ td {
     padding: 10px;
     font-size: 18px;
     color: black;
+    text-align: left;
 }
 #firstTh {
     text-align: center;
