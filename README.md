@@ -1,2 +1,2 @@
-# trijam
+# Trijam
 Trijam Webpage
