@@ -1,6 +1,15 @@
 $(document).ready(function() {
     $.ajax({
         type: "GET",
+        url: "/trijam/data/winners_26-50.csv",
+        dataType: "text",
+        success: function(_data) {
+            let data = ProcessData(_data);
+            LoadDataToTable(data);
+        }
+    });
+    $.ajax({
+        type: "GET",
         url: "/trijam/data/winners.csv",
         dataType: "text",
         success: function(_data) {
