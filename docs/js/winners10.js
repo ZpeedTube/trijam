@@ -28,10 +28,11 @@ $(document).ready(function() {
 function ProcessData(allText) {
     var allTextLines = allText.split(/\r\n|\n/);
     var headers = allTextLines[0].split(',');
-    var lines = [];
+    var lines = []
     for (var i=1; i<allTextLines.length; i++) {
         if (count>0) {
             var data = allTextLines[i].split(',');
+            if (data.length <= 1) continue;
             if (data.length == headers.length) {
                 var tarr = [];
                 for (var j=0; j<headers.length; j++) {
@@ -85,3 +86,9 @@ function LoadDataToTable(data) {
     }
 }
 
+function OpenHOF(){
+    window.open("winners.html");
+}
+function RedirectHOF(){
+    window.location = "winners.html";
+}

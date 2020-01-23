@@ -23,3 +23,27 @@ a:active {
 p {
     text-align: center;
 }
+
+button {
+    background-color: rgb(55, 55, 180);
+    border-radius: 5px;
+    border-width: 2px;
+    border-color: #2a293a;
+    padding: 10px 25px;
+    font-weight: 600;
+    font-size: 24px;
+    color: white;
+    position: relative;
+    margin: 5px;
+    min-width: 300px;
+}
+
+button:hover {
+    border-color: white;
+    border-width: 2px;
+    top:0px;
+}
+
+button:active {
+    background-color: rgb(55, 55, 255);
+}

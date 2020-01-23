@@ -37,6 +37,7 @@ function ProcessData(allText) {
     var lines = [];
     for (var i=1; i<allTextLines.length; i++) {
         var data = allTextLines[i].split(',');
+        if (data.length <= 1) continue;
         if (data.length == headers.length) {
             var tarr = [];
             for (var j=0; j<headers.length; j++) {
@@ -65,7 +66,6 @@ function LoadDataToTable(data) {
             let td = document.createElement("td");
             td.id = colID[col];
             tr.append(td);
-            console.log(displayText);
             // Checks if it has link and adds cell with link
             if (splitD.length>1) {
                 link = splitD[1];

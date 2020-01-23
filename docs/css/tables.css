@@ -43,6 +43,11 @@ td {
 #lastTh {
     border-radius: 0px 8px 0px 0px;
 }
+#wonTh {    
+    border-radius: 0px 8px 0px 0px;
+    text-align: center;
+
+}
 
 #jam {
     min-width: 100px;
@@ -53,6 +58,10 @@ td {
 #name {
     min-width: 200px;
 }
+#name2 {
+    min-width: 200px;
+    text-align: right;
+}
 
 #game {
     min-width: 200px;
@@ -60,4 +69,9 @@ td {
 
 #theme {
     min-width: 200px;
+}
+
+#wins {
+    min-width: 100px;
+    text-align: center;
 }
