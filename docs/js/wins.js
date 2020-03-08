@@ -1,42 +1,48 @@
-
 let allNames = [];
 let winnerData = [];
 
-
 $(document).ready(function() {
+    let data = [];
     $.ajax({
         type: "GET",
         url: "/trijam/data/winners_51-75.csv",
         dataType: "text",
-        success: function(_data) {
-            let data = ProcessDataNames(_data);
-            allNames = allNames.concat(data);
-            $.ajax({
-                type: "GET",
-                url: "/trijam/data/winners_26-50.csv",
-                dataType: "text",
-                success: async function(_data) {
-                    let data = ProcessDataNames(_data);
-                    allNames = allNames.concat(data);
-                    $.ajax({
-                        type: "GET",
-                        url: "/trijam/data/winners_1-25.csv",
-                        dataType: "text",
-                        success: function(_data) {
-                            let data = ProcessDataNames(_data);
-                            allNames = allNames.concat(data);
-                            winnerData = CountWins(allNames);
-                            SortWins(winnerData).then((wd)=> {
-                                LoadDataToTableWins(wd);
-
-                            });
-                        }
-                    });
-                }
-            });
+        success: async function(_data) {
+            data = ProcessDataNames(_data);
+            Concat(allNames,data);
+        }
+    });
+    $.ajax({
+        type: "GET",
+        url: "/trijam/data/winners_26-50.csv",
+        dataType: "text",
+        success: async function(_data) {
+            data = ProcessDataNames(_data);
+            Concat(allNames,data);
+            
+        }
+    });
+    $.ajax({
+        type: "GET",
+        url: "/trijam/data/winners_1-25.csv",
+        dataType: "text",
+        success: async function(_data) {
+            data = ProcessDataNames(_data);
+            Concat(allNames,data);
         }
     });
 });
+
+/**
+ * Merge 2 arrays
+ * @param {*} array1 array to merge into
+ * @param {*} array2 take data from this array and add to array1
+ */
+function Concat(array1, array2){
+    for (const key in array2) {
+        array1.push(array2[key]);
+    }
+}
 
 /**
  * @param {Array} returns Array of names
@@ -74,14 +80,19 @@ class Winner {
     }
 }
 
+/** Count wins for each name */
 function CountWins(data) {
     let namesList = data.slice(); // Makes copy of array
     let winners = [];
-    for (let i = 0; i < namesList.length; i++) {        
+    const length = namesList.length;
+    for (let i = 0; i < length; i++) {  
+        if (namesList.length === 0) {
+            console.log("No more wins, break loop.");
+            break;
+        }      
         let name = namesList.shift(); 
         let winner = new Winner(name);
         let skip = false;
-        // console.log(winner);
         for (let n = 0; n < winners.length; n++) {
             if (name.trim() === winners[n].name.trim()) {   
                 winners[n].AddWin();
@@ -90,18 +101,12 @@ function CountWins(data) {
             }
         }
         if (skip) continue;
-        for (let n = 0; n < namesList.length; n++) {
-            if (name.trim() === namesList[n].trim()) {   
-                namesList.splice(n,1); 
-                winner.AddWin();
-            }
-        }
         winners.push(winner);
     }
     return winners;
 }
 
-/** Returns a promise of a array */
+/** Returns a promise of a sorted array */
 function SortWins(data){
     return new Promise((resolve, reject)=>{
         let sorted = data.slice();
@@ -110,7 +115,6 @@ function SortWins(data){
             if (a.wins < b.wins) return 1;
             return 0;
         });
-        console.table(sorted);
         resolve(sorted);
     });
 }
@@ -118,8 +122,10 @@ function SortWins(data){
 // Column IDs for html&css
 const colID = ["name2","wins"];
 
+/** Takes data array of Winners and adds it to the table. */
 function LoadDataToTableWins(data) {
     let table = $("tbody")[0];
+    let count = 0;
     for(var i=0; i<data.length; i++){
         // Create new row
         let tr = document.createElement("tr");
@@ -133,8 +139,25 @@ function LoadDataToTableWins(data) {
         tdW.id = colID[1];
         tdW.prepend(data[i].wins);  
         tr.append(tdW);
+        count += data[i].wins;
         
         table.append(tr);
     }
+    console.log("Count: " + count);
 }
 
+
+/** Loops until all winner data has loaded */
+var loop = setInterval(() => {
+    if (winnerData.length > 0) {   
+        SortWins(winnerData).then((wd)=> {
+            LoadDataToTableWins(wd);
+        });
+        clearInterval(loop);
+        console.log("Loop stopped!");
+    }
+    else if (allNames.length > 51) { 
+        winnerData = CountWins(allNames);
+    } 
+    
+}, 100);
