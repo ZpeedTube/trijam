@@ -1,7 +1,3 @@
-function Link(txt){
-    window.location = txt;
-}
-
 function TrijamNumber() {
     const week = 7;
     const dayoffset = 2; // Offsets days froward
@@ -12,4 +8,9 @@ function TrijamNumber() {
     const dif = dateNow - dateStart;
     const calc = ((((dif / 1000) / 60) / 60) / 24) / 7;
     return Math.ceil(calc);
+}
+
+function OpenJamLink(offset=0){
+    const link = "https://itch.io/jam/trijam-"+(TrijamNumber()+offset);
+    window.open(link);
 }
