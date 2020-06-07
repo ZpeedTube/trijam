@@ -72,8 +72,11 @@ function LoadDataToTable(data) {
                 link = splitD[1];
                 // Creates a link
                 let a = document.createElement("a");
-                a.href = link;
+                // a.href = link;
                 a.innerHTML = displayText;
+                a.onclick = () => {
+                    window.open(link);
+                };
                 // Adds text to td
                 td.append(a);
                 continue; // Skips to next loop (of this for loop)
