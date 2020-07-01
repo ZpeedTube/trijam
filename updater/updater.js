@@ -84,8 +84,8 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
                 for (let i = 1; i < rows.length; i++) {
                     let row = rows[i].split(new RegExp(',','g'));
                     if (row.length === 4) {
-                        if (row[0] === jamNumber) {
-                            console.log(`Winner ${jamlinks} already in database file. You can close now.`);
+                        if (parseInt(row[0], 10) === jamNumber) {
+                            console.log(`Winner ${jamNumber} already in database file. You can close now.`);
                             return;
                         }
                     }
