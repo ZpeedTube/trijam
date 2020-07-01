@@ -70,6 +70,13 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
                     console.log(`New data should have been written to ${path}.`);
                     let git = shell.exec('git commit -am "Auto-updated"');
                     console.log('git', git.stdout, git.stderr);
+                    if (git.stdout) {
+                        let gitPush = shell.exec('git push');
+                        console.log('git pushed', gitPush.stdout, gitPush.stderr);
+                        if (gitPush.stdout) {
+                            console.log('All seems ok! You can close now.');
+                        }
+                    }
                 });
                 break;
             default:
@@ -89,6 +96,13 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
                     console.log(`New data should have been written to ${path}.`);
                     let git = shell.exec('git commit -am "Auto-updated"');
                     console.log('git', git.stdout, git.stderr);
+                    if (git.stdout) {
+                        let gitPush = shell.exec('git push');
+                        console.log('git pushed', gitPush.stdout, gitPush.stderr);
+                        if (gitPush.stdout) {
+                            console.log('All seems ok! You can close now.');
+                        }
+                    }
                 });
                 console.log('updateDatabase: case default');
                 break;
