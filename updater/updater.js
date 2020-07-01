@@ -53,6 +53,7 @@ function findData(datain, term, start, end) {
 }
 
 function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamTheme) {
+    const jamNumber = (jamlinks.trijamNumber() + offsetNumber);
     fs.readFile(path, 'utf8', (err, datain) => {
         if (err) {
             console.log("updateDatabase error",err);
@@ -60,7 +61,7 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
         }
         const rows = datain.split('\n');
         console.log(rows.length, rows);
-        let newData = `${(jamlinks.trijamNumber() + offsetNumber)},` + 
+        let newData = `${jamNumber},` + 
                 `${winnerName}>>>${winnerLink},${gameName}>>>${gameLink},` + 
                 `${jamTheme}`;
         switch (rows.length) {
@@ -80,6 +81,14 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
                 });
                 break;
             default:
+                for (let i = 1; i < rows.length; i++) {
+                    let row = rows[i].split(new RegExp(',','g'));
+                    if (row.length === 4) {
+                        if (row[0] === jamNumber) {
+                            console.log(`Winner ${jamlinks} already in database file`)
+                        }
+                    }
+                }
                 let returnData = "";
                 for (let i = 0; i < rows.length; i++) {
                     let row = rows[i];
