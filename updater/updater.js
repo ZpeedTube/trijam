@@ -57,7 +57,6 @@ curlGet((jamlinks.trijamLink(offsetNumber) + "/results"), (body) => {
  */
 function findData(datain, term, start, end) {
     var data = datain.split(term, 2);
-    console.log(data);
     data = data[1].split(start, 2);
     data = data[1].split(end, 2);
     return data[0].replace(new RegExp(',', 'g'), '.').replace(new RegExp('&nbsp;', 'g'), ' ');
@@ -79,7 +78,6 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
             return;
         }
         const rows = datain.split('\n');
-        console.log(rows.length, rows);
         // Formats the new row
         let newRow = `${jamNumber},` + 
                     `${winnerName}>>>${winnerLink},` +
@@ -137,7 +135,7 @@ function gitCommitPush() {
         if (gitPush.stderr) {
             console.log('git push failed. Please restart and try again!');
         } else if (gitPush.stdout) {
-            console.log('All seems ok! You can close now.');
+            console.log('All seems ok! You can close now. (Please check on github so it actually is uploaded!)');
         }
     }
 }
