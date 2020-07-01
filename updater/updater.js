@@ -65,11 +65,11 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
                 `${jamTheme}`;
         switch (rows.length) {
             case 1: 
-                newData = rows[0] + newData;
+                newData = rows[0] + '\n' + newData;
                 fs.writeFile(path, newData, 'utf8', () => {
                     console.log(`New data should have been written to ${path}.`);
                     let git = shell.exec('git commit -am "Auto-updated"');
-                    console.log('git', git);
+                    console.log('git', git.stdout, git.stderr);
                 });
                 break;
             default:
@@ -88,7 +88,7 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
                 fs.writeFile(path, returnData, 'utf8', () => {
                     console.log(`New data should have been written to ${path}.`);
                     let git = shell.exec('git commit -am "Auto-updated"');
-                    console.log('git', git);
+                    console.log('git', git.stdout, git.stderr);
                 });
                 console.log('updateDatabase: case default');
                 break;
