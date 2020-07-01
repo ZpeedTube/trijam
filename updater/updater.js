@@ -1,12 +1,8 @@
 const shell = require("shelljs");
 const fs = require('fs');
 const request = require("request");
-// import { join } from "path";
 const jamlinks = require("./jamlinks");
-console.log(Date().toString()); // Just to see when copy was done
-
-
-// shell.exec('git commit -am "Auto-updated"');
+console.log("Started at", Date().toString()); // Just to see when copy was done
 
 /**
  * Gets webpage and gives it in a callback
@@ -14,13 +10,12 @@ console.log(Date().toString()); // Just to see when copy was done
  * @param {Function} callback (body) => { }
  */
 function curlGet (url, callback, errorCallback = (error = undefined)=>{}) {
-    console.log("curl",url);
+    console.log("curl", url);
     request.get({
         url: url
     }, (err, resp, body) => {
         if (err) {
-            console.log("Error in curlGet",err)
-            errorCallback(err)
+            errorCallback(err);
         } else {
             callback(body);
         }
@@ -28,32 +23,56 @@ function curlGet (url, callback, errorCallback = (error = undefined)=>{}) {
 }
 
 let offsetNumber = 0;
+const jamNumber = (jamlinks.trijamNumber() + offsetNumber);
 
 curlGet((jamlinks.trijamLink(offsetNumber) + "/results"), (body) => {
     console.log("Response recived");
-    let data = body.split(new RegExp('<div class="game_rank first_place">', 'g'));
+    let data = body.split(new RegExp('<div class="game_rank first_place">', 'g'))[1];
     const gameName = findData(data, '<h2>', '>', '<');
     const gameLink = findData(data, '<a href=', '"', '"');
     const winnerLink = findData(data, '<h3>', 'href="', '"');
     const winnerName = findData(data, '<h3>', '>', '<');
-    console.log(gameName, gameLink, winnerName, winnerLink);
+    console.log(`Fetched winner data for trijam #${jamNumber}:`, gameName, gameLink, winnerName, winnerLink);
     curlGet((jamlinks.trijamLink(offsetNumber)), (body) => { 
-        let data2 = body.split(new RegExp('<div class="jam_content user_formatted">', 'g'));
+        let data2 = body.split(new RegExp('<div class="jam_content user_formatted">', 'g'))[1];
         const jamTheme = findData(data2, '<h1>',':','<');
-        updateDatabase('../docs/data/winners_76-100.csv', gameName, gameLink, winnerName, winnerLink, jamTheme);
+        let dataBasePath = "";
+        if (jamNumber >= 76 && jamNumber <= 100) {
+            dataBasePath = '../docs/data/winners_76-100.csv';
+        } else if (jamNumber >= 101 && jamNumber <= 125) {
+            dataBasePath = '../docs/data/winners_101-125.csv';
+        }
+        updateDatabase(dataBasePath, gameName, gameLink, winnerName, winnerLink, jamTheme);
     });
 }, (error) => {
+    console.log("Error in curlGet", error);
 });
 
+/**
+ * Finds string data in a string, also cleans string
+ * @param {string} datain 
+ * @param {string} term 
+ * @param {string} start 
+ * @param {string} end 
+ */
 function findData(datain, term, start, end) {
-    let data = datain[1].split(term, 2);
+    var data = datain.split(term, 2);
+    console.log(data);
     data = data[1].split(start, 2);
     data = data[1].split(end, 2);
     return data[0].replace(new RegExp(',', 'g'), '.').replace(new RegExp('&nbsp;', 'g'), ' ');
 }
 
+/**
+ * Updates database file by path given
+ * @param {string} path 
+ * @param {string} gameName 
+ * @param {string} gameLink 
+ * @param {string} winnerName 
+ * @param {string} winnerLink 
+ * @param {string} jamTheme
+ */
 function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamTheme) {
-    const jamNumber = (jamlinks.trijamNumber() + offsetNumber);
     fs.readFile(path, 'utf8', (err, datain) => {
         if (err) {
             console.log("updateDatabase error",err);
@@ -61,23 +80,17 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
         }
         const rows = datain.split('\n');
         console.log(rows.length, rows);
-        let newData = `${jamNumber},` + 
-                `${winnerName}>>>${winnerLink},${gameName}>>>${gameLink},` + 
-                `${jamTheme}`;
+        // Formats the new row
+        let newRow = `${jamNumber},` + 
+                    `${winnerName}>>>${winnerLink},` +
+                    `${gameName}>>>${gameLink},` + 
+                    `${jamTheme}`;
         switch (rows.length) {
             case 1: 
-                newData = rows[0] + '\n' + newData;
-                fs.writeFile(path, newData, 'utf8', () => {
+                newRow = rows[0] + '\n' + newRow;
+                fs.writeFile(path, newRow, 'utf8', () => {
                     console.log(`New data should have been written to ${path}.`);
-                    let git = shell.exec('git commit -am "Auto-updated"');
-                    console.log('git', git.stdout, git.stderr);
-                    if (git.stdout) {
-                        let gitPush = shell.exec('git push');
-                        console.log('git pushed', gitPush.stdout, gitPush.stderr);
-                        if (gitPush.stdout) {
-                            console.log('All seems ok! You can close now.');
-                        }
-                    }
+                    gitCommitPush();
                 });
                 break;
             default:
@@ -95,7 +108,7 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
                     let row = rows[i];
                     if (i === 0) {
                         returnData += rows[0] + '\n';
-                        returnData += newData + '\n';
+                        returnData += newRow + '\n';
                     } else if ((i + 1) === rows.length) {
                         returnData += row;
                     } else {
@@ -104,15 +117,7 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
                 }
                 fs.writeFile(path, returnData, 'utf8', () => {
                     console.log(`New data should have been written to ${path}.`);
-                    let git = shell.exec('git commit -am "Auto-updated"');
-                    console.log('git', git.stdout, git.stderr);
-                    if (git.stdout) {
-                        let gitPush = shell.exec('git push');
-                        console.log('git pushed', gitPush.stdout, gitPush.stderr);
-                        if (gitPush.stdout) {
-                            console.log('All seems ok! You can close now.');
-                        }
-                    }
+                    gitCommitPush();
                 });
                 console.log('updateDatabase: case default');
                 break;
@@ -120,3 +125,19 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
     });
 }
 
+/** Does git commit and git push */
+function gitCommitPush() {
+    let git = shell.exec('git commit -am "Auto-updated"');
+    // console.log('git', git.stdout, git.stderr);
+    if (git.stderr) {
+        console.log('git commit failed. Please restart and try again!');
+    } else if (git.stdout) {
+        let gitPush = shell.exec('git push');
+        // console.log('git pushed', gitPush.stdout, gitPush.stderr);
+        if (gitPush.stderr) {
+            console.log('git push failed. Please restart and try again!');
+        } else if (gitPush.stdout) {
+            console.log('All seems ok! You can close now.');
+        }
+    }
+}
