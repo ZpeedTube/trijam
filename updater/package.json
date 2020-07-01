@@ -1,0 +1,20 @@
+{
+  "name": "updater",
+  "version": "0.0.1",
+  "description": "A little tool for auto updating trijam winner database",
+  "main": "updater.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ."
+  },
+  "keywords": [
+    "trijam",
+    "jam"
+  ],
+  "author": "ZpeedTube",
+  "license": "ISC",
+  "dependencies": {
+    "request": "^2.88.2",
+    "shelljs": "^0.8.4"
+  }
+}
