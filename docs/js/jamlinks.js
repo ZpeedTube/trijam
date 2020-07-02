@@ -14,3 +14,8 @@ function OpenJamLink(offset=0){
     const link = "https://itch.io/jam/trijam-"+(TrijamNumber()+offset);
     window.open(link);
 }
+
+function OpenSpecialJamLink(url){
+    const link = url;
+    window.open(link);
+}
