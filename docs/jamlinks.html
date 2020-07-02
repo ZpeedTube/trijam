@@ -5,11 +5,19 @@
     <meta name="author" content="ZpeedTube">
     <title>Trijam Jamlinks</title>
     <link rel="stylesheet" type="text/css" href="/trijam/css/style.css">
-    <script src="/trijam/js/jamlinks.js"></script>
+    <script src="/trijam/js/jamlinks.js">
+        window.onload = () => {
+            const currentBtn = document.getElementById("current");
+            if (currentBtn) {
+                // Updates trijam number on the button
+                currentBtn.innerHTML = `TRIJAM ${TrijamNumber()}`;
+            }
+        }
+    </script>
 </head>
 <body>    
-    <!-- <button onclick="OpenJamLink()">CURRENT JAM</button> -->
+    <!-- <button id="current" onclick="OpenJamLink()">TRIJAM ?</button> -->
     <button onclick="OpenSpecialJamLink('https://itch.io/jam/triple-trijam-2020')">TRIPLE TRIJAM</button>
-    <button onclick="OpenJamLink(1)">NEXT JAM</button>
+    <button id="next" onclick="OpenJamLink(1)">NEXT JAM</button>
 </body>
 </html>
