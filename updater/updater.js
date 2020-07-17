@@ -25,7 +25,7 @@ function curlGet (url, callback, errorCallback = (error = undefined)=>{}) {
 let offsetNumber = -1;
 const jamNumber = (jamlinks.trijamNumber() + offsetNumber);
 
-curlGet((jamlinks.trijamLink(offsetNumber, 4) + "/results"), (body) => {
+curlGet((jamlinks.trijamLink(offsetNumber) + "/results"), (body) => {
     console.log("Response recived");
     let data = body.split(new RegExp('<div class="game_rank first_place">', 'g'))[1];
     const gameName = findData(data, '<h2>', '>', '<');
@@ -88,7 +88,7 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
                 newRow = rows[0] + '\n' + newRow;
                 fs.writeFile(path, newRow, 'utf8', () => {
                     console.log(`New data should have been written to ${path}.`);
-                    gitCommitPush();
+                    // gitCommitPush();
                 });
                 break;
             default:
@@ -115,7 +115,7 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
                 }
                 fs.writeFile(path, returnData, 'utf8', () => {
                     console.log(`New data should have been written to ${path}.`);
-                    gitCommitPush();
+                    // gitCommitPush();
                 });
                 console.log('updateDatabase: case default');
                 break;
