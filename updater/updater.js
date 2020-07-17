@@ -22,7 +22,7 @@ function curlGet (url, callback, errorCallback = (error = undefined)=>{}) {
     });
 }
 
-let offsetNumber = 0;
+let offsetNumber = -1;
 const jamNumber = (jamlinks.trijamNumber() + offsetNumber);
 
 curlGet((jamlinks.trijamLink(offsetNumber, 4) + "/results"), (body) => {
@@ -88,7 +88,7 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
                 newRow = rows[0] + '\n' + newRow;
                 fs.writeFile(path, newRow, 'utf8', () => {
                     console.log(`New data should have been written to ${path}.`);
-                    gitCommitPush();
+                    // gitCommitPush();
                 });
                 break;
             default:
@@ -115,7 +115,7 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
                 }
                 fs.writeFile(path, returnData, 'utf8', () => {
                     console.log(`New data should have been written to ${path}.`);
-                    gitCommitPush();
+                    // gitCommitPush();
                 });
                 console.log('updateDatabase: case default');
                 break;
