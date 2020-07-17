@@ -138,7 +138,7 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
                     let row = rows[i].split(new RegExp(',','g'));
                     if (row.length === 4) {
                         if (parseInt(row[0], 10) === jamNumber) {
-                            console.log(`Winner ${jamNumber} already in database file. You can close now.`);
+                            console.log(`Winner ${jamNumber} already in database file.`);
                             gitPush();
                             return;
                         }
@@ -179,7 +179,7 @@ function gitCommitPush() {
         if (gitPush.stderr) {
             console.log('git push failed. Please restart and try again!');
         } else if (gitPush.stdout) {
-            console.log('All seems ok! You can close now. (Please check on github so it actually is uploaded!)');
+            console.log('All seems ok! (Please check on github so it actually is uploaded!)');
         }
     }
 }/** Does git push */
@@ -187,7 +187,7 @@ function gitPush() {
     let gitPush = shell.exec('git push');
     // console.log('git pushed', gitPush.stdout, gitPush.stderr);
     if (gitPush.stdout.trim() === "Everything up-to-date") {
-        console.log('All seems ok! You can close now. (Please check on github so it actually is uploaded!)');
+        console.log('All seems ok! (Please check on github so it actually is uploaded!)');
     }
 }
 
