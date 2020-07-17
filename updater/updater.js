@@ -197,8 +197,10 @@ function checkForUpdates(){
         console.log("Checking for updates on the trijam git..");
         shell.exec('git pull', (code,stderr,stdout) => {
             if (stdout) {
-                console.log("test", code);
-                shell.exec(`sudo node . ${jamNumber}`);
+                console.log(code); 
+                shell.exec('npm i', (code,stderr,stdout) => {                    
+                    shell.exec(`node . ${jamNumber}`);
+                });
                 reject("updated");
             } else {
                 resolve();
