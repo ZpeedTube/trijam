@@ -1,9 +1,9 @@
 /**
  * Returns current trijam number
  */
-function trijamNumber() {
+function trijamNumber(offsetDays=0) {
     const week = 7;
-    const dayoffset = 1; // Offsets days froward
+    const dayoffset = 1 + offsetDays; // Offsets days froward
     const weekoffset = 3 * week; // Offsets 3 weeks from first jam week
     // Tuesday of the first week of Trijam #1
     const dateStart = Date.UTC(2019, 0, 1 + weekoffset + dayoffset);
@@ -13,8 +13,8 @@ function trijamNumber() {
     return Math.ceil(calc);
 }
 
-function trijamLink(offset=0){
-    return "https://itch.io/jam/trijam-"+(trijamNumber()+offset);
+function trijamLink(offset=0,offsetDay=0){
+    return "https://itch.io/jam/trijam-"+(trijamNumber(offsetDay)+offset);
 }
 module.exports.trijamLink = trijamLink;
 module.exports.trijamNumber = trijamNumber;

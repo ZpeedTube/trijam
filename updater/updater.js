@@ -25,7 +25,7 @@ function curlGet (url, callback, errorCallback = (error = undefined)=>{}) {
 let offsetNumber = 0;
 const jamNumber = (jamlinks.trijamNumber() + offsetNumber);
 
-curlGet((jamlinks.trijamLink(offsetNumber) + "/results"), (body) => {
+curlGet((jamlinks.trijamLink(offsetNumber, 4) + "/results"), (body) => {
     console.log("Response recived");
     let data = body.split(new RegExp('<div class="game_rank first_place">', 'g'))[1];
     const gameName = findData(data, '<h2>', '>', '<');
