@@ -32,6 +32,7 @@ if (argv.length > 2) {
 (async ()=> {
     const updated = await checkForUpdates();
     if (updated === "updated") { return; }
+    console.log(updated);
     if (jamNumber <= 75) {
         console.log("Won't update winner for jam 75 or older.");
         return;
