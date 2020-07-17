@@ -2,7 +2,8 @@ const shell = require("shelljs");
 const fs = require('fs');
 const request = require("request");
 const jamlinks = require("./jamlinks");
-console.log("Started at", Date().toString()); // Just to see when copy was done
+const { argv } = require("process");
+console.log("Started updater at", Date().toString()); // Just to see when copy was done
 
 /**
  * Gets webpage and gives it in a callback
@@ -10,40 +11,69 @@ console.log("Started at", Date().toString()); // Just to see when copy was done
  * @param {Function} callback (body) => { }
  */
 function curlGet (url, callback, errorCallback = (error = undefined)=>{}) {
-    console.log("curl", url);
+    // console.log("curl", url);
     request.get({
         url: url
     }, (err, resp, body) => {
         if (err) {
             errorCallback(err);
-        } else {
+        } else if (body) {
             callback(body);
+        } else {
+            errorCallback("body undefined");
         }
     });
 }
 
 let offsetNumber = -1;
-const jamNumber = (jamlinks.trijamNumber() + offsetNumber);
-
-curlGet((jamlinks.trijamLink(offsetNumber) + "/results"), (body) => {
-    console.log("Response recived");
-    let data = body.split(new RegExp('<div class="game_rank first_place">', 'g'))[1];
-    const gameName = findData(data, '<h2>', '>', '<');
-    const gameLink = findData(data, '<a href=', '"', '"');
-    const winnerLink = findData(data, '<h3>', 'href="', '"');
-    const winnerName = findData(data, '<h3>', '>', '<');
-    console.log(`Fetched winner data for trijam #${jamNumber}:`, gameName, gameLink, winnerName, winnerLink);
-    curlGet((jamlinks.trijamLink(offsetNumber)), (body) => { 
-        let data2 = body.split(new RegExp('<div class="jam_content user_formatted">', 'g'))[1];
-        const jamTheme = findData(data2, '<h1>',':','<');
-        let dataBasePath = "";
-        if (jamNumber >= 76 && jamNumber <= 100) {
-            dataBasePath = '../docs/data/winners_76-100.csv';
-        } else if (jamNumber >= 101 && jamNumber <= 125) {
-            dataBasePath = '../docs/data/winners_101-125.csv';
+let jamNumber = (jamlinks.trijamNumber() + offsetNumber);
+let jamlink = jamlinks.trijamLink(offsetNumber);
+// Checks if manual number is given and sets jamNumber and jamlink to the manual number
+if (argv.length > 2) {
+    console.log(process.argv);
+    let num = 0;
+    try {
+        num = parseInt(process.argv[2], 10);
+        if (num) {
+            jamNumber = num;
+            jamlink = jamlinks.trijamLinkNumber(num);
+            console.log(`Manual number ${num} was given.`);
+        } else {
+            console.log(`Value given is not a number: ${process.argv[2]} = ${num}`);
         }
-        updateDatabase(dataBasePath, gameName, gameLink, winnerName, winnerLink, jamTheme);
-    });
+    } catch (e) {
+        console.log(`No number given, continues automatically`);
+    }
+}
+console.log(`Check winnner for Trijam ${jamNumber}, ${jamlink}`);
+
+curlGet(jamlink + "/results", (body) => {
+    console.log("Response recived");
+    if (jamNumber <= 75) {
+        console.log("Won't update winner for jam 75 or older.");
+        return;
+    } 
+    try {
+        let data = body.split(new RegExp('<div class="game_rank first_place">', 'g'))[1];
+        const gameName = findData(data, '<h2>', '>', '<');
+        const gameLink = findData(data, '<a href=', '"', '"');
+        const winnerLink = findData(data, '<h3>', 'href="', '"');
+        const winnerName = findData(data, '<h3>', '>', '<');
+        console.log(`Fetched winner data for trijam #${jamNumber}:`, gameName, gameLink, winnerName, winnerLink);
+        curlGet(jamlink, (body) => { 
+            let data2 = body.split(new RegExp('<div class="jam_content user_formatted">', 'g'))[1];
+            const jamTheme = findData(data2, '<h1>',':','<');
+            let dataBasePath = "";
+             if (jamNumber >= 76 && jamNumber <= 100) {
+                dataBasePath = '../docs/data/winners_76-100.csv';
+            } else if (jamNumber >= 101 && jamNumber <= 125) {
+                dataBasePath = '../docs/data/winners_101-125.csv';
+            }
+            updateDatabase(dataBasePath, gameName, gameLink, winnerName, winnerLink, jamTheme);
+        });
+    } catch (e) {
+        console.log(`Can't find a winner for trijam ${jamNumber}? Error:`, e);
+    }
 }, (error) => {
     console.log("Error in curlGet", error);
 });

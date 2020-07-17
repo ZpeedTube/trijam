@@ -12,9 +12,19 @@ function trijamNumber(offsetDays=0) {
     const calc = ((((dif / 1000) / 60) / 60) / 24) / 7;
     return Math.ceil(calc);
 }
-
+/**
+ * Gets automatically a link based on trijamNumber(). 
+ * Jam number offset and day offset can be given also.
+ * @param {number} offset 
+ * @param {number} offsetDay 
+ */
 function trijamLink(offset=0,offsetDay=0){
     return "https://itch.io/jam/trijam-"+(trijamNumber(offsetDay)+offset);
 }
-module.exports.trijamLink = trijamLink;
+/** Returns link with given number at the end */
+function trijamLinkNumber(num=0){
+    return "https://itch.io/jam/trijam-"+(num);
+}
 module.exports.trijamNumber = trijamNumber;
+module.exports.trijamLink = trijamLink;
+module.exports.trijamLinkNumber = trijamLinkNumber;
