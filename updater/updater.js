@@ -88,7 +88,7 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
                 newRow = rows[0] + '\n' + newRow;
                 fs.writeFile(path, newRow, 'utf8', () => {
                     console.log(`New data should have been written to ${path}.`);
-                    // gitCommitPush();
+                    gitCommitPush();
                 });
                 break;
             default:
@@ -115,7 +115,7 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
                 }
                 fs.writeFile(path, returnData, 'utf8', () => {
                     console.log(`New data should have been written to ${path}.`);
-                    // gitCommitPush();
+                    gitCommitPush();
                 });
                 console.log('updateDatabase: case default');
                 break;
