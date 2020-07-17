@@ -139,6 +139,7 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
                     if (row.length === 4) {
                         if (parseInt(row[0], 10) === jamNumber) {
                             console.log(`Winner ${jamNumber} already in database file. You can close now.`);
+                            gitCommitPush();
                             return;
                         }
                     }
