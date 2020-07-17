@@ -2,8 +2,70 @@ const shell = require("shelljs");
 const fs = require('fs');
 const request = require("request");
 const jamlinks = require("./jamlinks");
-const { argv } = require("process");
+const { argv, stderr } = require("process");
+const { resolve } = require("path");
 console.log("Started updater at", Date().toString()); // Just to see when copy was done
+
+
+let manualFailed = false;
+let offsetNumber = -1;
+let jamNumber = (jamlinks.trijamNumber() + offsetNumber);
+let jamlink = jamlinks.trijamLink(offsetNumber);
+// Checks if manual number is given and sets jamNumber and jamlink to the manual number
+if (argv.length > 2) {
+    let num = 0;
+    try {
+        num = parseInt(process.argv[2], 10);
+        if (num) {
+            jamNumber = num;
+            jamlink = jamlinks.trijamLinkNumber(num);
+            console.log(`Manual number ${num} was given.`);
+        } else {
+            console.log(`Value given is not a number: ${process.argv[2]} = ${num}`);
+            manualFailed = true;
+        }
+    } catch (e) {
+        console.log(`No number given, continues automatically`);
+    }
+}
+console.log(`Check winnner for Trijam ${jamNumber}, ${jamlink}`);
+
+(async ()=> {
+    await checkForUpdates();
+    curlGet(jamlink + "/results", (body) => {
+        console.log("Response recived");
+        if (jamNumber <= 75) {
+            console.log("Won't update winner for jam 75 or older.");
+            return;
+        } else if (manualFailed) {
+            return;
+        }
+        try {
+            let data = body.split(new RegExp('<div class="game_rank first_place">', 'g'))[1];
+            const gameName = findData(data, '<h2>', '>', '<');
+            const gameLink = findData(data, '<a href=', '"', '"');
+            const winnerLink = findData(data, '<h3>', 'href="', '"');
+            const winnerName = findData(data, '<h3>', '>', '<');
+            console.log(`Fetched winner data for trijam #${jamNumber}:`, gameName, gameLink, winnerName, winnerLink);
+            curlGet(jamlink, (body) => { 
+                let data2 = body.split(new RegExp('<div class="jam_content user_formatted">', 'g'))[1];
+                const jamTheme = findData(data2, '<h1>',':','<');
+                let dataBasePath = "";
+                 if (jamNumber >= 76 && jamNumber <= 100) {
+                    dataBasePath = '../docs/data/winners_76-100.csv';
+                } else if (jamNumber >= 101 && jamNumber <= 125) {
+                    dataBasePath = '../docs/data/winners_101-125.csv';
+                }
+                updateDatabase(dataBasePath, gameName, gameLink, winnerName, winnerLink, jamTheme);
+            });
+        } catch (e) {
+            console.log(`Can't find a winner for trijam ${jamNumber}? Has the winner been announced yet?`);
+        }
+    }, (error) => {
+        console.log("Error in curlGet", error);
+    });
+    
+})()
 
 /**
  * Gets webpage and gives it in a callback
@@ -24,59 +86,6 @@ function curlGet (url, callback, errorCallback = (error = undefined)=>{}) {
         }
     });
 }
-
-let offsetNumber = -1;
-let jamNumber = (jamlinks.trijamNumber() + offsetNumber);
-let jamlink = jamlinks.trijamLink(offsetNumber);
-// Checks if manual number is given and sets jamNumber and jamlink to the manual number
-if (argv.length > 2) {
-    console.log(process.argv);
-    let num = 0;
-    try {
-        num = parseInt(process.argv[2], 10);
-        if (num) {
-            jamNumber = num;
-            jamlink = jamlinks.trijamLinkNumber(num);
-            console.log(`Manual number ${num} was given.`);
-        } else {
-            console.log(`Value given is not a number: ${process.argv[2]} = ${num}`);
-        }
-    } catch (e) {
-        console.log(`No number given, continues automatically`);
-    }
-}
-console.log(`Check winnner for Trijam ${jamNumber}, ${jamlink}`);
-
-curlGet(jamlink + "/results", (body) => {
-    console.log("Response recived");
-    if (jamNumber <= 75) {
-        console.log("Won't update winner for jam 75 or older.");
-        return;
-    } 
-    try {
-        let data = body.split(new RegExp('<div class="game_rank first_place">', 'g'))[1];
-        const gameName = findData(data, '<h2>', '>', '<');
-        const gameLink = findData(data, '<a href=', '"', '"');
-        const winnerLink = findData(data, '<h3>', 'href="', '"');
-        const winnerName = findData(data, '<h3>', '>', '<');
-        console.log(`Fetched winner data for trijam #${jamNumber}:`, gameName, gameLink, winnerName, winnerLink);
-        curlGet(jamlink, (body) => { 
-            let data2 = body.split(new RegExp('<div class="jam_content user_formatted">', 'g'))[1];
-            const jamTheme = findData(data2, '<h1>',':','<');
-            let dataBasePath = "";
-             if (jamNumber >= 76 && jamNumber <= 100) {
-                dataBasePath = '../docs/data/winners_76-100.csv';
-            } else if (jamNumber >= 101 && jamNumber <= 125) {
-                dataBasePath = '../docs/data/winners_101-125.csv';
-            }
-            updateDatabase(dataBasePath, gameName, gameLink, winnerName, winnerLink, jamTheme);
-        });
-    } catch (e) {
-        console.log(`Can't find a winner for trijam ${jamNumber}? Error:`, e);
-    }
-}, (error) => {
-    console.log("Error in curlGet", error);
-});
 
 /**
  * Finds string data in a string, also cleans string
@@ -155,6 +164,7 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
 
 /** Does git commit and git push */
 function gitCommitPush() {
+
     let git = shell.exec('git commit -am "Auto-updated"');
     // console.log('git', git.stdout, git.stderr);
     if (git.stderr) {
@@ -168,4 +178,20 @@ function gitCommitPush() {
             console.log('All seems ok! You can close now. (Please check on github so it actually is uploaded!)');
         }
     }
+}
+
+function checkForUpdates(){
+    return new Promise((resolve) => {
+        console.log("Checking for updates on the trijam git..");
+        const gitPull = shell.exec('git pull', (code,stdout,stderr) => {
+            if (stderr) {
+                console.log("Something went wrong with checking for git updates.")
+                console.log("Atempts to continue normally.");
+                console.log(code, stderr);
+            } else if (stdout) {
+                console.log("test", code);
+            }
+            resolve();
+        });
+    });
 }
