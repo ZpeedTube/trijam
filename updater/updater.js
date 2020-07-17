@@ -11,36 +11,38 @@ let manualFailed = false;
 let offsetNumber = -1;
 let jamNumber = (jamlinks.trijamNumber() + offsetNumber);
 let jamlink = jamlinks.trijamLink(offsetNumber);
+// Checks if manual number is given and sets jamNumber and jamlink to the manual number
+if (argv.length > 2) {
+    let num = 0;
+    try {
+        num = parseInt(process.argv[2], 10);
+        if (num) {
+            jamNumber = num;
+            jamlink = jamlinks.trijamLinkNumber(num);
+            console.log(`Manual number ${num} was given.`);
+        } else {
+            console.log(`Value given is not a number: ${process.argv[2]} = ${num}`);
+            manualFailed = true;
+        }
+    } catch (e) {
+        console.log(`No number given, continues automatically`);
+    }
+}
 
 (async ()=> {
-    await checkForUpdates();
-    // Checks if manual number is given and sets jamNumber and jamlink to the manual number
-    if (argv.length > 2) {
-        let num = 0;
-        try {
-            num = parseInt(process.argv[2], 10);
-            if (num) {
-                jamNumber = num;
-                jamlink = jamlinks.trijamLinkNumber(num);
-                console.log(`Manual number ${num} was given.`);
-            } else {
-                console.log(`Value given is not a number: ${process.argv[2]} = ${num}`);
-                manualFailed = true;
-            }
-        } catch (e) {
-            console.log(`No number given, continues automatically`);
-        }
-    }
-    console.log(`Check winnner for Trijam ${jamNumber}, ${jamlink}`);
-    console.log("Response recived");
+    const updated = await checkForUpdates();
+    if (updated === "updated") { return; }
     if (jamNumber <= 75) {
         console.log("Won't update winner for jam 75 or older.");
         return;
     } else if (manualFailed) {
         return;
+    } else {
+        console.log(`Check winnner for Trijam ${jamNumber}, ${jamlink}`);
     }
 
     curlGet(jamlink + "/results", (body) => {
+        console.log("Response recived");
         try {
             let data = body.split(new RegExp('<div class="game_rank first_place">', 'g'))[1];
             const gameName = findData(data, '<h2>', '>', '<');
@@ -183,13 +185,16 @@ function gitCommitPush() {
 
 /** Checks for git repository updates. Returns promise. */
 function checkForUpdates(){
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         console.log("Checking for updates on the trijam git..");
-        const gitPull = shell.exec('git pull', (code,stderr,stdout) => {
+        shell.exec('git pull', (code,stderr,stdout) => {
             if (stdout) {
                 console.log("test", code);
+                shell.exec(`sudo node . ${jamNumber}`);
+                reject("updated");
+            } else {
+                resolve();
             }
-            resolve();
         });
     });
 }
