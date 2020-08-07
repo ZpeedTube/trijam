@@ -64,12 +64,22 @@ function ProcessDataNames(allText) {
     for (var i  =1; i < allTextLines.length; i++) {
         var data = allTextLines[i].split(',');
         if (data.length <= 1) continue;
-        let splitD = data[1].split(">>>");
-        let splitU = splitD[0].split('&');
-        for (var j = 0; j < splitU.length; j++) {
-            let name = splitU[j].trim();
-            names.push(name);
-        }        
+        let splitUser = splitD[0].split('&&&');
+        if (splitUser.length > 0) {
+            for (const user of splitUser) {
+                let userData = user.split(">>>");                
+                let name = userData[0].trim();
+                names.push(name);
+            }
+        }
+        else {
+            let splitD = data[1].split(">>>");
+            let splitU = splitD[0].split('&');
+            for (var j = 0; j < splitU.length; j++) {
+                let name = splitU[j].trim();
+                names.push(name);
+            }
+        }
     }
     return names;
 }
