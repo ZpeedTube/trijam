@@ -70,25 +70,29 @@ function LoadDataToTable(data) {
         // Create a new td for each cell
         for(var col = 0; col < data[i].length; col++){
             let splitU = data[i][col].split('&&&');
+            const displayText = "";
+            let td = document.createElement("td");
+            td.id = colID[col];
+            tr.append(td);
             for (const user of splitU) {
                 let userData = user.split(">>>");
-                const displayText = userData[0];
-                let link = "";
-                let td = document.createElement("td");
-                td.id = colID[col];
-                tr.append(td);
+                let userName = userData[0]; // Gets user name
+                displayText += userName;
                 // Checks if it has link and adds cell with link
                 if (userData.length > 1) {
-                    link = userData[1];
+                    const link = userData[1];
                     let a = document.createElement("a");
                     a.href = link;
                     a.innerHTML = displayText;
                     td.append(a);
-                    
+                    if (splitU.length > 0) {
+                        td.innerHTML += " ";
+                    }
                     continue; // Skips to next loop (of this for loop)
-                }                
-                // Add normal cell
-                td.prepend(displayText);            
+                } else {
+                    // Add normal cell
+                    td.prepend(displayText);
+                }
             }
         }
         table.append(tr);
