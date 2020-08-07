@@ -54,40 +54,41 @@ const colID = ["jam","name","game","theme"];
 
 function LoadDataToTable(data) {
     let table = $("tbody")[0];
-    for(var i=0; i<data.length; i++){
+    for(var i = 0; i < data.length; i++){
         // Create new row
         let tr = document.createElement("tr");
         // Create a new td for each cell
-        for(var col=0; col<data[i].length; col++){
-            let splitD = data[i][col].split(">>>");
-            const displayText = splitD[0];
-            let link = "";
+        for(var col = 0; col < data[i].length; col++){
+            let splitU = data[i][col].split('&&&');
+            // let displayText = "";
             let td = document.createElement("td");
             td.id = colID[col];
-            // Add normal cell
             tr.append(td);
-            // Checks if it has link and adds cell with link
-            if (splitD.length>1) {
-                // Get's link data
-                link = splitD[1];
-                // Creates a link
-                let a = document.createElement("a");
-                // a.href = link;
-                a.innerHTML = displayText;
-                a.onclick = () => {
-                    window.open(link);
-                };
-                // Adds text to td
-                td.append(a);
-                continue; // Skips to next loop (of this for loop)
+            for (const user of splitU) {
+                let userData = user.split(">>>");
+                let userName = userData[0]; // Gets user name
+                // displayText += userName;
+                // Checks if it has link and adds cell with link
+                if (userData.length > 1) {
+                    const link = userData[1];
+                    let a = document.createElement("a");
+                    a.href = link;
+                    a.innerHTML = userName;
+                    td.append(a);
+                    if (splitU.length > 0) {
+                        td.innerHTML += " ";
+                    }
+                    continue; // Skips to next loop (of this for loop)
+                } else {
+                    // Add normal cell
+                    td.prepend(userName);
+                }
             }
-            // Adds text to td
-            td.prepend(displayText);            
         }
-        // Adds row to table
         table.append(tr);
     }
 }
+
 
 function OpenHOF(){
     window.open("winners.html");
