@@ -70,7 +70,7 @@ function LoadDataToTable(data) {
         // Create a new td for each cell
         for(var col = 0; col < data[i].length; col++){
             let splitU = data[i][col].split('&&&');
-            const displayText = "";
+            let displayText = "";
             let td = document.createElement("td");
             td.id = colID[col];
             tr.append(td);
