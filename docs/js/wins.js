@@ -64,7 +64,7 @@ function ProcessDataNames(allText) {
     for (var i  =1; i < allTextLines.length; i++) {
         var data = allTextLines[i].split(',');
         if (data.length <= 1) continue;
-        let splitUser = data[0].split('&&&');
+        let splitUser = data[1].split('&&&');
         if (splitUser.length > 0) {
             for (const user of splitUser) {
                 let userData = user.split(">>>");                
