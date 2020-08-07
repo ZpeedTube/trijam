@@ -44,8 +44,8 @@ $(document).ready(function() {
 
 /**
  * Merge 2 arrays
- * @param {*} array1 array to merge into
- * @param {*} array2 take data from this array and add to array1
+ * @param {Array} array1 array to merge into
+ * @param {Array} array2 take data from this array and add to array1
  */
 function Concat(array1, array2){
     for (const key in array2) {
@@ -54,18 +54,19 @@ function Concat(array1, array2){
 }
 
 /**
- * @param {Array} returns Array of names
+ * Returns new array of names
+ * @param {Array<Winner>} allText Array of names
  */
 function ProcessDataNames(allText) {
     var allTextLines = allText.split(/\r\n|\n/);
     var headers = 2;
     var names = [];
-    for (var i=1; i<allTextLines.length; i++) {
+    for (var i  =1; i < allTextLines.length; i++) {
         var data = allTextLines[i].split(',');
         if (data.length <= 1) continue;
         let splitD = data[1].split(">>>");
         let splitU = splitD[0].split('&');
-        for (var j=0; j<splitU.length; j++) {
+        for (var j = 0; j < splitU.length; j++) {
             let name = splitU[j].trim();
             names.push(name);
         }        
@@ -135,7 +136,7 @@ const colID = ["name2","wins"];
 function LoadDataToTableWins(data) {
     let table = $("tbody")[0];
     let count = 0;
-    for(var i=0; i<data.length; i++){
+    for(var i = 0; i < data.length; i++){
         // Create new row
         let tr = document.createElement("tr");
         // Create a new td for each cell
