@@ -72,6 +72,7 @@ function LoadDataToTable(data) {
                 if (userData.length > 1) {
                     const link = userData[1];
                     let a = document.createElement("a");
+                    a.target = "_blank";
                     a.href = link;
                     a.innerHTML = userName;
                     td.append(a);
@@ -91,7 +92,7 @@ function LoadDataToTable(data) {
 
 
 function OpenHOF(){
-    window.open("https://zpeedtube.github.io/trijam/winners.html");
+    window.open("winners.html");
 }
 function RedirectHOF(){
     window.location = "winners.html";
