@@ -91,7 +91,7 @@ function LoadDataToTable(data) {
 
 
 function OpenHOF(){
-    window.open("winners.html");
+    window.open("https://zpeedtube.github.io/trijam/winners.html");
 }
 function RedirectHOF(){
     window.location = "winners.html";
