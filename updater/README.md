@@ -1,4 +1,5 @@
 # Updater
+For auto updating this git repository. (You need to be collaborator to be albe to run this.)
 
 ## installation 
 For this program to work you need to have installed Node.js with npm AND github command line interface.
