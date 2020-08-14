@@ -20,4 +20,4 @@ If they fail then try:
 
 ## startup command arguments
 - **'node . [trijam number]'** Example: *'node . 90'* will add winner(s) of Trijam 90.
-- **'node . [trijam number] [placement]'** Example: *'node . 90 2'* will add winner(s) of Trijam 90 on 2nd place.
+- **'node . [trijam number] [placement]'** Example: *'node . 90 2'* will add winner(s) of Trijam 90 on 2nd place as winner.
