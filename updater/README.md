@@ -1,4 +1,4 @@
-# updater
+# Updater
 
 ## installation 
 For this program to work you need to have installed Node.js with npm AND github command line interface.
@@ -16,3 +16,8 @@ To run the **updater**, open (this) folder in your terminal/console and type **'
 If they fail then try:
 - linux: adding **'sudo '** in front.
 - windows: opening cmd with **Run as administator**.
+
+
+## startup command arguments
+- **'node . [trijam number]'** Example: *'node . 90'* will add winner(s) of Trijam 90.
+- **'node . [trijam number] [placement]'** Example: *'node . 90 2'* will add winner(s) of Trijam 90 on 2nd place.
