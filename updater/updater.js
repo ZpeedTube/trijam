@@ -11,6 +11,7 @@ let manualFailed = false;
 let offsetNumber = -1;
 let jamNumber = (jamlinks.trijamNumber() + offsetNumber);
 let jamlink = jamlinks.trijamLink(offsetNumber);
+let placement = 1;
 // Checks if manual number is given and sets jamNumber and jamlink to the manual number
 if (argv.length > 2) {
     let num = 0;
@@ -25,7 +26,17 @@ if (argv.length > 2) {
             manualFailed = true;
         }
     } catch (e) {
-        console.log(`No number given, continues automatically`);
+        console.log(`No trijam number given..`);
+    }
+    try {
+        if (argv.length === 4) {
+            placement = parseInt(process.argv[3], 10);
+            if (placement) {
+                console.log(`Placement number ${placement} is used`);
+            }
+        }
+    } catch (e) {
+        console.log(`No placement number given..`);
     }
 }
 
@@ -45,12 +56,28 @@ if (argv.length > 2) {
     curlGet(jamlink + "/results", (body) => {
         console.log("Response recived");
         try {
-            let data = body.split(new RegExp('<div class="game_rank first_place">', 'g'))[1];
+            // let data = body.split(new RegExp('<div class="game_rank first_place">', 'g'))[1];
+            let data = findData(body,'<div class="game_rank first_place">','<div class="game_summary">', '</div>');
+            switch(placement) {
+                case 1: break;
+                case 2: 
+                    data = findData(body,'<div class="game_rank second_place">','<div class="game_summary">', '</div>');
+                    break;
+                case 3:                     
+                    data = findData(body,'<div class="game_rank third_place">','<div class="game_summary">', '</div>');
+                    break;
+                default:
+                    console.log(`Can't add ${placement} place, you must add it manually!`);
+                    return;
+            }
+            console.log('data', data);
+            const winners = getWinners(data);
+            console.log(`Selected winners for #${jamNumber} are: \n`, winners, ``);
             const gameName = findData(data, '<h2>', '>', '<');
             const gameLink = findData(data, '<a href=', '"', '"');
-            const winnerLink = findData(data, '<h3>', 'href="', '"');
-            const winnerName = findData(data, '<h3>', '>', '<');
-            console.log(`Fetched winner data for trijam #${jamNumber}:`, gameName, gameLink, winnerName, winnerLink);
+            // const winnerLink = findData(data, '<h3>', 'href="', '"');
+            // const winnerName = findData(data, '<h3>', '>', '<');
+            // console.log(`Fetched winner data for trijam #${jamNumber}:`, gameName, gameLink, winnerName, winnerLink);
             curlGet(jamlink, (body) => { 
                 let data2 = body.split(new RegExp('<div class="jam_content user_formatted">', 'g'))[1];
                 const jamTheme = findData(data2, '<h1>',':','<');
@@ -60,10 +87,12 @@ if (argv.length > 2) {
                 } else if (jamNumber >= 101 && jamNumber <= 125) {
                     dataBasePath = '../docs/data/winners_101-125.csv';
                 }
-                updateDatabase(dataBasePath, gameName, gameLink, winnerName, winnerLink, jamTheme);
+                const winnerRow = formatWinnersRow(winners, gameName, gameLink, jamTheme);
+                console.log(`Winner row that is added to database: \n`,winnerRow);
+                updateDatabase(dataBasePath, gameName, gameLink, winnerRow, jamTheme);
             });
         } catch (e) {
-            console.log(`Can't find a winner for trijam ${jamNumber}? Has the winner been announced yet?`);
+            console.log(`Can't find a winner for trijam ${jamNumber}? Has the winner been announced yet? \n`, e);
         }
     }, (error) => {
         console.log("Error in curlGet", error);
@@ -104,6 +133,47 @@ function findData(datain, term, start, end) {
     data = data[1].split(end, 2);
     return data[0].replace(new RegExp(',', 'g'), '.').replace(new RegExp('&nbsp;', 'g'), ' ');
 }
+/**
+ * 
+ * 
+ * @param {string} datain 
+ * @returns {[{name: string, link: string}]} winners array
+ */
+function getWinners (datain) {
+    const winnersData = findData(datain, '<h3>', 'by', '</h3>');
+    console.log('winnersData', winnersData);
+    const winnersSplit = winnersData.split(new RegExp('<a', 'g'), 10);
+    let winners = [];
+    for(const winner of winnersSplit) {
+        if (winner.trim() === "") continue;
+        console.log('winner', winner);
+        const winnerLink = findData(winner, 'href=', '"', '"');
+        const winnerName = findData(winner, 'href=', '>', '</a');
+        winners.push({name: winnerName, link: winnerLink});
+    }
+    return winners;
+}
+
+/**
+ * Gives the winner(s) as a row
+ * @param {[{name: string, link: string}]} winnersArray 
+ * @returns {string} returns new row for database
+ */
+function formatWinnersRow(winnersArray, gameName, gameLink, jamTheme) {
+    // Formats the new row
+    let newRow = `${jamNumber},`;
+    let i = 0;
+    for (const winner of winnersArray) {
+        newRow += `${winner.name}>>>${winner.link}`;
+        if ((i + 1) < winnersArray.length) {
+            newRow += `&&&`;
+        }
+        i++;
+    }
+    newRow += `,${gameName}>>>${gameLink},`;
+    newRow += `${jamTheme}`;
+    return newRow;
+}
 
 /**
  * Updates database file by path given
@@ -114,22 +184,17 @@ function findData(datain, term, start, end) {
  * @param {string} winnerLink 
  * @param {string} jamTheme
  */
-function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamTheme) {
+function updateDatabase(path, gameName, gameLink, winnerRow, jamTheme) {
     fs.readFile(path, 'utf8', (err, datain) => {
         if (err) {
             console.log("updateDatabase error",err);
             return;
         }
         const rows = datain.split('\n');
-        // Formats the new row
-        let newRow = `${jamNumber},` + 
-                    `${winnerName}>>>${winnerLink},` +
-                    `${gameName}>>>${gameLink},` + 
-                    `${jamTheme}`;
         switch (rows.length) {
             case 1: 
-                newRow = rows[0] + '\n' + newRow;
-                fs.writeFile(path, newRow, 'utf8', () => {
+                winnerRow = rows[0] + '\n' + winnerRow;
+                fs.writeFile(path, winnerRow, 'utf8', () => {
                     console.log(`New data should have been written to ${path}.`);
                     gitCommitPush();
                 });
@@ -140,7 +205,7 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
                     if (row.length === 4) {
                         if (parseInt(row[0], 10) === jamNumber) {
                             console.log(`Winner ${jamNumber} already in database file.`);
-                            gitPush();
+                            // gitPush();
                             return;
                         }
                     }
@@ -150,7 +215,7 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
                     let row = rows[i];
                     if (i === 0) {
                         returnData += rows[0] + '\n';
-                        returnData += newRow + '\n';
+                        returnData += winnerRow + '\n';
                     } else if ((i + 1) === rows.length) {
                         returnData += row;
                     } else {
@@ -169,27 +234,25 @@ function updateDatabase(path, gameName, gameLink, winnerName, winnerLink, jamThe
 
 /** Does git commit and git push */
 function gitCommitPush() {
-
-    let git = shell.exec('git commit -am "Auto-updated"');
-    // console.log('git', git.stdout, git.stderr);
-    if (git.stderr) {
-        console.log('git commit failed. Please restart and try again!');
-    } else if (git.stdout) {
-        let gitPush = shell.exec('git push');
-        // console.log('git pushed', gitPush.stdout, gitPush.stderr);
-        if (gitPush.stderr) {
-            console.log('git push failed. Please restart and try again!');
-        } else if (gitPush.stdout) {
-            console.log('All seems ok! (Please check on github so it actually is uploaded!)');
+    let git = shell.exec('git commit -am "Auto-updated"', async (code,stderr,stdout) => {
+        if (stderr) {
+            console.log('git commit failed. Please restart and try again!');
         }
-    }
+        else if (stdout) {
+            await gitPush();
+        }
+    });
 }/** Does git push */
 function gitPush() {
-    let gitPush = shell.exec('git push');
-    // console.log('git pushed', gitPush.stdout, gitPush.stderr);
-    if (gitPush.stdout.trim() === "Everything up-to-date") {
-        console.log('All seems ok! (Please check on github so it actually is uploaded!)');
-    }
+    return new Promise((resolve, reject) => {
+        shell.exec('git push', (code,stderr,stdout) => {
+            if (stdout.trim() === "Everything up-to-date") {
+                console.log('All seems ok! (Please check on github so it actually is uploaded!)');
+                resolve();
+            }
+        });
+        // console.log('git pushed', gitPush.stdout, gitPush.stderr);
+    });
 }
 
 /** Checks for git repository updates. Returns promise. */
