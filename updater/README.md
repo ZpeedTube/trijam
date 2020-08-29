@@ -9,8 +9,8 @@ After installing these the final step is to open (this) folder in terminal/conso
 You should be done now.
 
 ## usage
-Before running this you need to sign in with your github account, use this first 'sudo git config --global credential.helper store' so you don't have to re sign in every time.
-Then run this 'git pull' and should now ask for your credentials when you run this 'git push', remember that you have to be in the trijam folder that you downloaded with git clone.
+Before running this you need to sign in with your github account, use this first '**sudo git config --global credential.helper store**' so you don't have to re sign in every time.
+Then run this '**git pull**' and should now ask for your credentials when you run this '**git push**', remember that you have to be in the trijam folder that you downloaded with git clone.
 
 To run the **updater**, open (this) folder in your terminal/console and type **'npm start'** or **'node .'**.
 
