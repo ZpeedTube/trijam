@@ -5,6 +5,15 @@ $(document).ready(function() {
     let data = [];
     $.ajax({
         type: "GET",
+        url: "/trijam/data/winners_101-125.csv",
+        dataType: "text",
+        success: async function(_data) {
+            data = ProcessDataNames(_data);
+            Concat(allNames,data);
+        }
+    });
+    $.ajax({
+        type: "GET",
         url: "/trijam/data/winners_76-100.csv",
         dataType: "text",
         success: async function(_data) {
