@@ -241,7 +241,7 @@ function gitCommitPush() {
         if (stderr) {
             console.log('git commit failed. Please restart and try again!');
         }
-        else if (stdout) {
+        else {
             await gitPush();
         }
     });
