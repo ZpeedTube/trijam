@@ -56,8 +56,8 @@ if (argv.length > 2) {
     curlGet(jamlink + "/results", (body) => {
         console.log("Response recived");
         try {
-            // let data = body.split(new RegExp('<div class="game_rank first_place">', 'g'))[1];
             let data = findData(body,'<div class="game_rank first_place">','<div class="game_summary">', '</div>');
+            if (data === undefined) throw new Error('Could not find any winner data...');
             switch(placement) {
                 case 1: break;
                 case 2: 
@@ -75,9 +75,6 @@ if (argv.length > 2) {
             console.log(`Selected winners for #${jamNumber} are: \n`, winners, ``);
             const gameName = findData(data, '<h2>', '>', '<');
             const gameLink = findData(data, '<a href=', '"', '"');
-            // const winnerLink = findData(data, '<h3>', 'href="', '"');
-            // const winnerName = findData(data, '<h3>', '>', '<');
-            // console.log(`Fetched winner data for trijam #${jamNumber}:`, gameName, gameLink, winnerName, winnerLink);
             curlGet(jamlink, (body) => { 
                 let data2 = body.split(new RegExp('<div class="jam_content user_formatted">', 'g'))[1];
                 const jamTheme = findData(data2, '<h1>',':','<');
@@ -128,9 +125,15 @@ function curlGet (url, callback, errorCallback = (error = undefined)=>{}) {
  * @param {string} end 
  */
 function findData(datain, term, start, end) {
-    var data = datain.split(term, 2);
-    data = data[1].split(start, 2);
-    data = data[1].split(end, 2);
+    var data;
+    try {
+        data = datain.split(term, 2);
+        data = data[1].split(start, 2);
+        data = data[1].split(end, 2);        
+    } catch (e) {
+        console.log(`Could not find anything with findData()`);
+        return undefined;
+    }
     return data[0].replace(new RegExp(',', 'g'), '.').replace(new RegExp('&nbsp;', 'g'), ' ');
 }
 /**
