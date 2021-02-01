@@ -239,8 +239,9 @@ function updateDatabase(path, gameName, gameLink, winnerRow, jamTheme) {
 }
 
 /** Does git commit and git push */
-function gitCommitPush() {
-    let git = shell.exec('git commit -am "Auto-updated"', async (code,stderr,stdout) => {
+async function gitCommitPush() {
+    await gitAdd();
+    let git = shell.exec('git commit -m "Auto-updated"', async (code,stderr,stdout) => {
         if (stderr) {
             console.log('git commit failed. Please restart and try again!\n', stderr);
         }
@@ -266,6 +267,24 @@ function gitPush() {
             }
         });
         // console.log('git pushed', gitPush.stdout, gitPush.stderr);
+    });
+}
+/** Does git add . */
+function gitAdd() {
+    return new Promise((resolve, reject) => {
+        shell.exec('git add .', (code,stderr,stdout) => {
+            if (stdout) {
+                console.log('Added files.\n', stdout);
+                resolve();
+            }
+            else if (stderr){
+                console.log('add failed\n', stderr);
+                reject(stderr);
+            }
+            else {                
+                console.log('something went wrong with git add\n', code);
+            }
+        });
     });
 }
 
