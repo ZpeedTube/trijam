@@ -240,7 +240,7 @@ function updateDatabase(path, gameName, gameLink, winnerRow, jamTheme) {
 
 /** Does git commit and git push */
 function gitCommitPush() {
-    let git = shell.exec('git commit -m "Auto-updated"', async (code,stderr,stdout) => {
+    let git = shell.exec('git commit -am "Auto-updated"', async (code,stderr,stdout) => {
         if (stderr) {
             console.log('git commit failed. Please restart and try again!');
         }
