@@ -188,7 +188,7 @@ function formatWinnersRow(winnersArray, gameName, gameLink, jamTheme) {
  * @param {string} jamTheme
  */
 function updateDatabase(path, gameName, gameLink, winnerRow, jamTheme) {
-    fs.readFile(path, 'utf8', (err, datain) => {
+    fs.readFile(path, 'utf8', async (err, datain) => {
         if (err) {
             console.log("updateDatabase error",err);
             return;
@@ -199,7 +199,9 @@ function updateDatabase(path, gameName, gameLink, winnerRow, jamTheme) {
                 winnerRow = rows[0] + '\n' + winnerRow;
                 fs.writeFile(path, winnerRow, 'utf8', () => {
                     console.log(`New data should have been written to ${path}.`);
-                    gitCommitPush();
+                    setTimeout(() => {                        
+                        gitCommitPush();
+                    }, 500);
                 });
                 break;
             default:
@@ -208,7 +210,8 @@ function updateDatabase(path, gameName, gameLink, winnerRow, jamTheme) {
                     if (row.length === 4) {
                         if (parseInt(row[0], 10) === jamNumber) {
                             console.log(`Winner ${jamNumber} already in database file.`);
-                            gitPush();
+                            await gitPush();
+                            console.log(`Atempted to push winner again!`);
                             return;
                         }
                     }
@@ -237,21 +240,29 @@ function updateDatabase(path, gameName, gameLink, winnerRow, jamTheme) {
 
 /** Does git commit and git push */
 function gitCommitPush() {
-    let git = shell.exec('git commit -am "Auto-updated"', async (code,stderr,stdout) => {
+    let git = shell.exec('git commit -m "Auto-updated"', async (code,stderr,stdout) => {
         if (stderr) {
             console.log('git commit failed. Please restart and try again!');
         }
         else {
-            await gitPush();
+            setTimeout(() => {
+                await gitPush();
+                console.log(`Atempted to push winner!`);
+            }, 1000);
         }
     });
-}/** Does git push */
+}
+/** Does git push */
 function gitPush() {
     return new Promise((resolve, reject) => {
         shell.exec('git push', (code,stderr,stdout) => {
             if (stdout.trim() === "Everything up-to-date") {
                 console.log('All seems ok! (Please check on github so it actually is uploaded!)');
                 resolve();
+            }
+            else if (stderr){
+                console.log('push got rejected\n', stderr);
+                reject(stderr);
             }
         });
         // console.log('git pushed', gitPush.stdout, gitPush.stderr);
