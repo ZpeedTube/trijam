@@ -245,7 +245,7 @@ function gitCommitPush() {
             console.log('git commit failed. Please restart and try again!');
         }
         else {
-            setTimeout(() => {
+            setTimeout(async () => {
                 await gitPush();
                 console.log(`Atempted to push winner!`);
             }, 1000);
