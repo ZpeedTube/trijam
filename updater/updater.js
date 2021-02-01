@@ -242,22 +242,23 @@ function updateDatabase(path, gameName, gameLink, winnerRow, jamTheme) {
 async function gitCommitPush() {
     await gitAdd();
     let git = shell.exec('git commit -m "Auto-updated"', async (code,stderr,stdout) => {
-        if (stderr) {
-            console.log('git commit failed. Please restart and try again!\n', stderr);
-        }
-        else {
+        if (code === 0){
             setTimeout(async () => {
                 await gitPush();
                 console.log(`Atempted to push winner!`);
             }, 1000);
         }
+        else {
+            console.log('git commit failed. Please restart and try again!\n', stderr);
+        }
+        
     });
 }
 /** Does git push */
 function gitPush() {
     return new Promise((resolve, reject) => {
         shell.exec('git push', (code,stderr,stdout) => {
-            if (stdout.trim() === "Everything up-to-date") {
+            if (code === 0) {
                 console.log('All seems ok! (Please check on github so it actually is uploaded!)');
                 resolve();
             }
@@ -273,7 +274,7 @@ function gitPush() {
 function gitAdd() {
     return new Promise((resolve, reject) => {
         shell.exec('git add .', (code,stderr,stdout) => {
-            if (stdout) {
+            if (code === 0) {
                 console.log('Added files.\n', stdout);
                 resolve();
             }
