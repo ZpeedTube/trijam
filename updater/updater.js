@@ -241,18 +241,19 @@ function updateDatabase(path, gameName, gameLink, winnerRow, jamTheme) {
 /** Does git commit and git push */
 async function gitCommitPush() {
     await gitAdd();
-    let git = shell.exec('git commit -m "Auto-updated"', async (code,stderr,stdout) => {
-        if (code === 0){
-            setTimeout(async () => {
-                await gitPush();
-                console.log(`Atempted to push winner!`);
-            }, 1000);
-        }
-        else {
-            console.log('git commit failed. Please restart and try again!\n', stderr);
-        }
-        
-    });
+    setTimeout(() => {
+        let git = shell.exec('git commit -m "Auto-updated"', async (code,stderr,stdout) => {
+            if (code === 0){
+                setTimeout(async () => {
+                    await gitPush();
+                    console.log(`Atempted to push winner!`);
+                }, 1000);
+            }
+            else {
+                console.log('git commit failed. Please restart and try again!\n', stderr);
+            }            
+        });
+    }, 500);
 }
 /** Does git push */
 function gitPush() {
