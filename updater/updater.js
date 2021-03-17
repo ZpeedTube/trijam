@@ -134,7 +134,13 @@ function findData(datain, term, start, end) {
         console.log(`Could not find anything with findData()`);
         return undefined;
     }
-    return data[0].replace(new RegExp(',', 'g'), '.').replace(new RegExp('&nbsp;', 'g'), ' ');
+    return data[0].replace(new RegExp(',', 'g'), '.')
+        .replace(new RegExp('&nbsp;', 'g'), ' ')
+        .replace(new RegExp('&#x27;', 'g'), '\'')
+        .replace(new RegExp('&#x201B;', 'g'), '\'')
+        .replace(new RegExp('&#x201D;', 'g'), '"')
+        .replace(new RegExp('&#x2215;', 'g'), '/')
+        .replace(new RegExp('&#x2044;', 'g'), '/');
 }
 /**
  * 
@@ -268,7 +274,6 @@ function gitPush() {
                 reject(stderr);
             }
         });
-        // console.log('git pushed', gitPush.stdout, gitPush.stderr);
     });
 }
 /** Does git add . */
