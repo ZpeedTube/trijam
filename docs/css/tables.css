@@ -1,6 +1,3 @@
-
-
-
 table {
     margin: auto;
     border-radius: 7px;
@@ -8,13 +5,13 @@ table {
     max-width: 100%;
 }
 tr {
-    background-color: rgb(70, 165, 200);
+    background-color: #424c6e;
 }
 tr:nth-child(odd){
-    background-color: rgb(76, 171, 206);
+    background-color: #363d5e;
 }
 #trHead {
-    background-color: rgb(70, 165, 70);
+    background-color: #fd5470;
     border-bottom-color: rgb(31, 59, 23);
     border-bottom-width: 2px;
     border-bottom-style: solid;
@@ -33,7 +30,7 @@ td {
     height: 25px;
     padding: 10px;
     font-size: 18px;
-    color: black;
+    color: white;
     text-align: left;
 }
 #firstTh {
