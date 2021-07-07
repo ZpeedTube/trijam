@@ -242,8 +242,9 @@ function updateDatabase(path, gameName, gameLink, winnerRow, jamTheme) {
 /** Does git commit and git push */
 async function gitCommitPush() {
     await gitAdd();
+    let userName = await getGitUserName();
     setTimeout(() => {
-        let git = shell.exec('git commit -am "Auto-updated"', async (code,stderr,stdout) => {
+        let git = shell.exec(`git commit -am "Auto-updated by ${userName}"`, async (code,stderr,stdout) => {
             if (code === 0){
                 setTimeout(async () => {
                     await gitPush();
@@ -271,10 +272,10 @@ function gitPush() {
         });
     });
 }
-/** Does git add . */
+/** Does git add winners.csv */
 function gitAdd() {
     return new Promise((resolve, reject) => {
-        shell.exec('git add .', (code,stderr,stdout) => {
+        shell.exec('git add ../docs/data/winners.csv', (code,stderr,stdout) => {
             if (code === 0) {
                 console.log('Added files.\n', stdout);
                 resolve();
@@ -303,6 +304,26 @@ function checkForUpdates(){
                 reject("updated");
             } else {
                 resolve();
+            }
+        });
+    });
+}
+
+/** Gets git user.name Returns promise. */
+function getGitUserName(){
+    return new Promise((resolve, reject) => {
+        shell.exec('git config user.name', (code,stdout,stderr) => {
+            if (stdout) {
+                if (stdout === '') { 
+                    console.log('rejected user.name - empty string', code, stdout); 
+                    reject();
+                }
+                else {
+                    resolve(stdout);
+                }
+            } else {
+                console.log('rejected user.name', code, stderr); 
+                reject();
             }
         });
     });
