@@ -9,6 +9,7 @@ $(document).ready(function() {
         dataType: "text",
         success: async function(_data) {
             data = ProcessDataNames(_data);
+            Concat(allNames,data);
         }
     });
 });
