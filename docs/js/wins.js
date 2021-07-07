@@ -5,48 +5,10 @@ $(document).ready(function() {
     let data = [];
     $.ajax({
         type: "GET",
-        url: "/trijam/data/winners_101-125.csv",
+        url: "/trijam/data/winners.csv",
         dataType: "text",
         success: async function(_data) {
             data = ProcessDataNames(_data);
-            Concat(allNames,data);
-        }
-    });
-    $.ajax({
-        type: "GET",
-        url: "/trijam/data/winners_76-100.csv",
-        dataType: "text",
-        success: async function(_data) {
-            data = ProcessDataNames(_data);
-            Concat(allNames,data);
-        }
-    });
-    $.ajax({
-        type: "GET",
-        url: "/trijam/data/winners_51-75.csv",
-        dataType: "text",
-        success: async function(_data) {
-            data = ProcessDataNames(_data);
-            Concat(allNames,data);
-        }
-    });
-    $.ajax({
-        type: "GET",
-        url: "/trijam/data/winners_26-50.csv",
-        dataType: "text",
-        success: async function(_data) {
-            data = ProcessDataNames(_data);
-            Concat(allNames,data);
-            
-        }
-    });
-    $.ajax({
-        type: "GET",
-        url: "/trijam/data/winners_1-25.csv",
-        dataType: "text",
-        success: async function(_data) {
-            data = ProcessDataNames(_data);
-            Concat(allNames,data);
         }
     });
 });

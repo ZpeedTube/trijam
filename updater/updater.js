@@ -78,12 +78,7 @@ if (argv.length > 2) {
             curlGet(jamlink, (body) => { 
                 let data2 = body.split(new RegExp('<div class="jam_content user_formatted">', 'g'))[1];
                 const jamTheme = findData(data2, '<h1>',':','<');
-                let dataBasePath = "";
-                 if (jamNumber >= 76 && jamNumber <= 100) {
-                    dataBasePath = '../docs/data/winners_76-100.csv';
-                } else if (jamNumber >= 101 && jamNumber <= 125) {
-                    dataBasePath = '../docs/data/winners_101-125.csv';
-                }
+                let dataBasePath = "../docs/data/winners.csv";
                 const winnerRow = formatWinnersRow(winners, gameName, gameLink, jamTheme);
                 console.log(`Winner row that is added to database: \n`,winnerRow);
                 updateDatabase(dataBasePath, gameName, gameLink, winnerRow, jamTheme);
