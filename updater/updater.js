@@ -244,7 +244,7 @@ async function gitCommitPush() {
     await gitAdd();
     let userName = await getGitUserName();
     setTimeout(() => {
-        let git = shell.exec(`git commit -am "Auto-updated by ${userName}"`, async (code,stderr,stdout) => {
+        let git = shell.exec(`git commit -m "Auto-updated by ${userName}"`, async (code,stderr,stdout) => {
             if (code === 0){
                 setTimeout(async () => {
                     await gitPush();
