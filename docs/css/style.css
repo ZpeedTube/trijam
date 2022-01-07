@@ -34,7 +34,7 @@ p {
 }
 
 button {
-    background-color: rgb(55, 55, 180);
+    background-color: #ee5354;
     border-radius: 5px;
     border-width: 2px;
     border-color: #2a293a;
@@ -54,5 +54,5 @@ button:hover {
 }
 
 button:active {
-    background-color: rgb(55, 55, 255);
+    background-color: #ea2e2f;
 }
