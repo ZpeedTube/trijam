@@ -11,6 +11,10 @@ body {
     margin: 20px;
 }
 
+.background {    
+    background-color: #2a293a;
+}
+
 h1 {
     color: white;
     font-family: Kalibers;
