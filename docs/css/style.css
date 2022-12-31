@@ -11,7 +11,7 @@ body {
     margin: 20px;
 }
 
-.background {    
+.background {
     background-color: #2a293a;
 }
 
@@ -37,7 +37,7 @@ p {
 }
 
 button {
-    background-color: #ee5354;
+    background-color: #9cff00;
     border-radius: 5px;
     border-width: 2px;
     border-color: #2a293a;
@@ -57,5 +57,5 @@ button:hover {
 }
 
 button:active {
-    background-color: #ea2e2f;
+    background-color: #74b904;
 }

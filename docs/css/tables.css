@@ -11,7 +11,7 @@ tr:nth-child(odd){
     background-color: #363d5e;
 }
 #trHead {
-    background-color: #fad644;
+    background-color: #9cff00;
     border-bottom-color: rgb(31, 59, 23);
     border-bottom-width: 2px;
     border-bottom-style: solid;
@@ -40,7 +40,7 @@ td {
 #lastTh {
     border-radius: 0px 8px 0px 0px;
 }
-#wonTh {    
+#wonTh {
     border-radius: 0px 8px 0px 0px;
     text-align: center;
 
