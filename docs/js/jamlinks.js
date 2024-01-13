@@ -1,7 +1,7 @@
 function TrijamNumber() {
     const week = 7;
     const dayoffset = 2; // Offsets days froward
-    const weekoffset = 10 * week; // Offsets X weeks from first jam week
+    const weekoffset = 11 * week; // Offsets X weeks from first jam week
     // Tuesday of the first week of Trijam #1
     const dateStart = Date.UTC(2019, 0, 1 + weekoffset + dayoffset);
     const dateNow = Date.now();
